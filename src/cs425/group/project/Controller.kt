@@ -6,9 +6,8 @@ import javafx.scene.control.TextField
 import javafx.scene.layout.StackPane
 import javafx.stage.Window
 import java.sql.DriverManager
-import java.sql.ResultSet
 
-private const val DB_URL = "jdbc:oracle:thin:@localhost:1521:orclcdb"
+private const val DB_URL = "jdbc:oracle:thin:@smb.lobstergaming.com:1521:orclcdb"
 private const val USER = "system"
 private const val PASS = "oracle"
 
