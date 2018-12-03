@@ -1,5 +1,6 @@
 package cs425.group.project
 
+import cs425.group.project.db.Customer
 import javafx.fxml.FXML
 import javafx.scene.control.TextField
 import javafx.scene.layout.StackPane
@@ -55,16 +56,5 @@ class Controller
     fun exit()
     {
         window.hide()
-    }
-}
-
-data class Customer(val id: Long, val name: String, val email: String, val address1: String, val address2: String?, val city: String, val state: String, val zipCode: Int, val phone: String, val gender: String, val income: Int)
-{
-    companion object
-    {
-        fun create(result: ResultSet) = Customer(result.getLong("CustomerID"), result.getString("Name"),
-                result.getString("Email"), result.getString("Address1"), result.getString("Address2"),
-                result.getString("City"), result.getString("State"), result.getInt("ZipCode"),
-                result.getString("Phone"), result.getString("Gender"), result.getInt("Income"))
     }
 }
