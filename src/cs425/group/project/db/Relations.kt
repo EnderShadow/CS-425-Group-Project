@@ -54,7 +54,7 @@ class Customer private constructor(var name: String, var email: String, var addr
     }
 }
 
-class Brand private constructor(var name: String, var company: String)
+class Brand private constructor(val name: String, val company: String)
 {
     var id: Short = 0
         private set
@@ -167,7 +167,7 @@ class Vehicle private constructor(var VIN: String, var VTypeID: Short, var Engin
         statement.executeUpdate("update VEHICLES set VIN = '$VIN', VTYPEID = $VTypeID, ENGINE = '$Engine', TRANSMISSION = '$Transmission', VCOLOR = '$VColor', VYEAR = $VYear where VEHICLEID = $id")
     }
 }
-class Dealer private constructor(var Name: String)
+class Dealer private constructor(val Name: String)
 {
     var id: Int = 0
         private set
@@ -182,7 +182,7 @@ class Dealer private constructor(var Name: String)
         }
     }
 }
-class Factory private constructor(var Name: String, var PartID: Short)
+class Factory private constructor(val Name: String, val PartID: Short)
 {
     var id: Int = 0
         private set
@@ -197,7 +197,7 @@ class Factory private constructor(var Name: String, var PartID: Short)
         }
     }
 }
-class Part private constructor(var Name: String, var VTypeID: Short)
+class Part private constructor(val Name: String, val VTypeID: Short)
 {
     var id: Int = 0
         private set
