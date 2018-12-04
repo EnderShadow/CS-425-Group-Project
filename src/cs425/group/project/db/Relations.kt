@@ -18,7 +18,7 @@ abstract class DBCompanion<T>
     }
 }
 
-class Customer private constructor(val name: String, val email: String, val address1: String, val address2: String = "", val city: String, val state: String, val zipCode: Int, val phone: String, val gender: String, val income: Int)
+class Customer private constructor(var name: String, var email: String, var address1: String, var address2: String = "", var city: String, var state: String, var zipCode: Int, var phone: String, var gender: String, var income: Int)
 {
     // This is only ever 0 when the object is initially created. It is set to a non-zero value after immediately after.
     // See Customer.get and Customer.create
@@ -54,7 +54,7 @@ class Customer private constructor(val name: String, val email: String, val addr
     }
 }
 
-class Brand private constructor(val name: String, val company: String)
+class Brand private constructor(var name: String, var company: String)
 {
     var id: Short = 0
         private set
@@ -87,7 +87,7 @@ class Brand private constructor(val name: String, val company: String)
     }
 }
 
-class VehicleType private constructor(val trim: String, val brandID: Short, val vModel: String)
+class VehicleType private constructor(var trim: String, var brandID: Short, var vModel: String)
 {
     var id: Int = 0
         private set
