@@ -212,3 +212,17 @@ class Part private constructor(val name: String, val vTypeID: Short)
         }
     }
 }
+class Suppliers private constructor(val name: String)
+{
+    var id: Int = 0
+        private set
+
+    companion object: DBCompanion<Suppliers>(){
+        override fun get(result: ResultSet): Suppliers
+        {
+            val type = Suppliers(result["Name"]!!)
+            type.id = result["PartID"]!!.toInt()
+            return type
+        }
+    }
+}

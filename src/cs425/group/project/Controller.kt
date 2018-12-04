@@ -132,6 +132,9 @@ class CustomerLoginController
             if(customers.isEmpty())
             {
                 // TODO create Customer object, fill in data, and then call updateDatabase
+                //creating customer with data from text fields
+                val customer = Customer.create(nameTextField.text, emailTextField.text, address1TextField.text, address2TextField.text, cityTextField.text, stateTextField.text, zipcodeTextField.text.toInt(), phoneTextField.text, genderTextField.text, incomeTextField.text.toInt())
+                customer.updateDatabase()
             }
             else
             {
@@ -148,7 +151,9 @@ class DealerLoginController
     
     @FXML private lateinit var dealerIDTextField: TextField
     @FXML private lateinit var submitButton: Button
-    
+    @FXML private lateinit var dealerNameTextField: TextField
+
+
     fun initialize()
     {
         submitButton.disableProperty().bind(Bindings.createBooleanBinding(Callable {!dealerIDTextField.text.matches(Regex("[0-9]+"))}, dealerIDTextField.textProperty()))
@@ -156,6 +161,9 @@ class DealerLoginController
     
     fun submit()
     {
+        if (submitButton.isPressed){
+
+        }
     
     }
 }
