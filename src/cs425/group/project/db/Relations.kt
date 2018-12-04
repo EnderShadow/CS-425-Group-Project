@@ -103,7 +103,7 @@ class VehicleType private constructor(var trim: String, var brandID: Short, var 
     }
 }
 
-class VehicleSale private constructor(var DealerID: Short, var VehicleID: Short, var CustomerID: Short, var SaleDate: String)
+class VehicleSale private constructor(var dealerID: Short, var vehicleID: Short, var customerID: Short, var saleDate: String)
 {
     var id: Int = 0
         private set
@@ -117,12 +117,12 @@ class VehicleSale private constructor(var DealerID: Short, var VehicleID: Short,
             return type
         }
 
-        fun create(DealerID: Short, VehicleID: Short, CustomerID: Short, SaleDate: String): VehicleSale
+        fun create(dealerID: Short, vehicleID: Short, customerID: Short, saleDate: String): VehicleSale
         {
-            val type = VehicleSale(DealerID, VehicleID, CustomerID, SaleDate)
+            val type = VehicleSale(dealerID, vehicleID, customerID, saleDate)
             val statement = connection.createStatement()
-            statement.executeUpdate("insert into VEHICLESALES(VEHICLEID, DEALERID, CUSTOMERID, SALEDATE) values ($VehicleID, $DealerID, $CustomerID, '$SaleDate')")
-            val result = statement.executeQuery("select SaleID from VEHICLESALES where VEHICLEID = '$VehicleID' and DEALERID = '$DealerID' and SALEDATE = '$SaleDate' and CUSTOMERID = '$CustomerID'")
+            statement.executeUpdate("insert into VEHICLESALES(VEHICLEID, DEALERID, CUSTOMERID, SALEDATE) values ($vehicleID, $dealerID, $customerID, '$saleDate')")
+            val result = statement.executeQuery("select SaleID from VEHICLESALES where VEHICLEID = '$vehicleID' and DEALERID = '$dealerID' and SALEDATE = '$saleDate' and CUSTOMERID = '$customerID'")
             result.next()
             type.id = result["SaleID"]!!.toInt()
             return type
@@ -132,10 +132,10 @@ class VehicleSale private constructor(var DealerID: Short, var VehicleID: Short,
     fun updateDatabase()
     {
         val statement = connection.createStatement()
-        statement.executeUpdate("update VEHICLESALES set VEHICLEID = $VehicleID, DEALERID = $DealerID, CUSTOMERID = $CustomerID, SALEDATE = '$SaleDate' where SALEID = $id")
+        statement.executeUpdate("update VEHICLESALES set VEHICLEID = $vehicleID, DEALERID = $dealerID, CUSTOMERID = $customerID, SALEDATE = '$saleDate' where SALEID = $id")
     }
 }
-class Vehicle private constructor(var VIN: String, var VTypeID: Short, var Engine: String, var Transmission: String, var VColor: String, var VYear: Short)
+class Vehicle private constructor(var vin: String, var vTypeID: Short, var engine: String, var transmission: String, var vColor: String, var vYear: Short)
 {
     var id: Int = 0
         private set
@@ -149,12 +149,12 @@ class Vehicle private constructor(var VIN: String, var VTypeID: Short, var Engin
             return type
         }
 
-        fun create(VIN: String, VTypeID: Short, Engine: String, Transmission: String, VColor: String, VYear: Short): Vehicle
+        fun create(vin: String, vTypeID: Short, engine: String, transmission: String, vColor: String, vYear: Short): Vehicle
         {
-            val type = Vehicle(VIN, VTypeID, Engine, Transmission, VColor, VYear)
+            val type = Vehicle(vin, vTypeID, engine, transmission, vColor, vYear)
             val statement = connection.createStatement()
-            statement.executeUpdate("insert into VEHICLES(VIN, VTYPEID, ENGINE, TRANSMISSION, VCOLOR, VYEAR) values ('$VIN', $VTypeID, '$Engine', '$Transmission', '$VColor', $VYear)")
-            val result = statement.executeQuery("select VEHICLEID from VEHICLES where VIN = '$VIN' and VTYPEID = '$VTypeID' and ENGINE = '$Engine' and TRANSMISSION = '$Transmission' and VCOLOR = '$VColor' and VYEAR = '$VYear'")
+            statement.executeUpdate("insert into VEHICLES(VIN, VTYPEID, ENGINE, TRANSMISSION, VCOLOR, VYEAR) values ('$vin', $vTypeID, '$engine', '$transmission', '$vColor', $vYear)")
+            val result = statement.executeQuery("select VEHICLEID from VEHICLES where VIN = '$vin' and VTYPEID = '$vTypeID' and ENGINE = '$engine' and TRANSMISSION = '$transmission' and VCOLOR = '$vColor' and VYEAR = '$vYear'")
             result.next()
             type.id = result["VehicleID"]!!.toInt()
             return type
@@ -164,10 +164,10 @@ class Vehicle private constructor(var VIN: String, var VTypeID: Short, var Engin
     fun updateDatabase()
     {
         val statement = connection.createStatement()
-        statement.executeUpdate("update VEHICLES set VIN = '$VIN', VTYPEID = $VTypeID, ENGINE = '$Engine', TRANSMISSION = '$Transmission', VCOLOR = '$VColor', VYEAR = $VYear where VEHICLEID = $id")
+        statement.executeUpdate("update VEHICLES set VIN = '$vin', VTYPEID = $vTypeID, ENGINE = '$engine', TRANSMISSION = '$transmission', VCOLOR = '$vColor', VYEAR = $vYear where VEHICLEID = $id")
     }
 }
-class Dealer private constructor(val Name: String)
+class Dealer private constructor(val name: String)
 {
     var id: Int = 0
         private set
@@ -182,7 +182,7 @@ class Dealer private constructor(val Name: String)
         }
     }
 }
-class Factory private constructor(val Name: String, val PartID: Short)
+class Factory private constructor(val name: String, val partID: Short)
 {
     var id: Int = 0
         private set
@@ -197,7 +197,7 @@ class Factory private constructor(val Name: String, val PartID: Short)
         }
     }
 }
-class Part private constructor(val Name: String, val VTypeID: Short)
+class Part private constructor(val name: String, val vTypeID: Short)
 {
     var id: Int = 0
         private set
