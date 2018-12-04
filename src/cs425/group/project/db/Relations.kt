@@ -67,23 +67,6 @@ class Brand private constructor(var name: String, var company: String)
             brand.id = result["BrandID"]!!.toShort()
             return brand
         }
-        
-        fun create(name: String, company: String): Brand
-        {
-            val brand = Brand(name, company)
-            val statement = connection.createStatement()
-            statement.executeUpdate("insert into BRANDS(BRANDNAME, COMPANY) values ('$name', '$company')")
-            val result = statement.executeQuery("select BRANDID from BRANDS where BRANDNAME = '$name' and COMPANY = '$company'")
-            result.next()
-            brand.id = result["BrandID"]!!.toShort()
-            return brand
-        }
-    }
-    
-    fun updateDatabase()
-    {
-        val statement = connection.createStatement()
-        statement.executeUpdate("update BRANDS set BRANDNAME = '$name', COMPANY = '$company' where BRANDID = $id")
     }
 }
 
@@ -108,7 +91,7 @@ class VehicleType private constructor(var trim: String, var brandID: Short, var 
             statement.executeUpdate("insert into VEHICLETYPES(TRIM, BRANDID, VMODEL) values ('$trim', $brandID, '$vModel')")
             val result = statement.executeQuery("select VTypeID from VEHICLETYPES where TRIM = '$trim' and BRANDID = '$brandID' and VMODEL = '$vModel'")
             result.next()
-            type.id = result["VehcileID"]!!.toInt()
+            type.id = result["VehicleID"]!!.toInt()
             return type
         }
     }
@@ -117,5 +100,115 @@ class VehicleType private constructor(var trim: String, var brandID: Short, var 
     {
         val statement = connection.createStatement()
         statement.executeUpdate("update VEHICLETYPES set TRIM = '$trim', BRANDID = $brandID, VMODEL = '$vModel' where VTYPEID = $id")
+    }
+}
+
+class VehicleSale private constructor(var DealerID: Short, var VehicleID: Short, var CustomerID: Short, var SaleDate: String)
+{
+    var id: Int = 0
+        private set
+
+    companion object: DBCompanion<VehicleSale>()
+    {
+        override fun get(result: ResultSet): VehicleSale
+        {
+            val type = VehicleSale(result["DealerID"]!!.toShort(), result["VehicleID"]!!.toShort(), result["CustomerID"]!!.toShort(), result["SaleDate"]!!)
+            type.id = result["SaleID"]!!.toInt()
+            return type
+        }
+
+        fun create(DealerID: Short, VehicleID: Short, CustomerID: Short, SaleDate: String): VehicleSale
+        {
+            val type = VehicleSale(DealerID, VehicleID, CustomerID, SaleDate)
+            val statement = connection.createStatement()
+            statement.executeUpdate("insert into VEHICLESALES(VEHICLEID, DEALERID, CUSTOMERID, SALEDATE) values ($VehicleID, $DealerID, $CustomerID, '$SaleDate')")
+            val result = statement.executeQuery("select SaleID from VEHICLESALES where VEHICLEID = '$VehicleID' and DEALERID = '$DealerID' and SALEDATE = '$SaleDate' and CUSTOMERID = '$CustomerID'")
+            result.next()
+            type.id = result["SaleID"]!!.toInt()
+            return type
+        }
+    }
+
+    fun updateDatabase()
+    {
+        val statement = connection.createStatement()
+        statement.executeUpdate("update VEHICLESALES set VEHICLEID = $VehicleID, DEALERID = $DealerID, CUSTOMERID = $CustomerID, SALEDATE = '$SaleDate' where SALEID = $id")
+    }
+}
+class Vehicle private constructor(var VIN: String, var VTypeID: Short, var Engine: String, var Transmission: String, var VColor: String, var VYear: Short)
+{
+    var id: Int = 0
+        private set
+
+    companion object: DBCompanion<Vehicle>()
+    {
+        override fun get(result: ResultSet): Vehicle
+        {
+            val type = Vehicle(result["VIN"]!!, result["VTypeID"]!!.toShort(), result["Engine"]!!, result["Transmission"]!!, result["VColor"]!!, result["VYear"]!!.toShort())
+            type.id = result["VehicleID"]!!.toInt()
+            return type
+        }
+
+        fun create(VIN: String, VTypeID: Short, Engine: String, Transmission: String, VColor: String, VYear: Short): Vehicle
+        {
+            val type = Vehicle(VIN, VTypeID, Engine, Transmission, VColor, VYear)
+            val statement = connection.createStatement()
+            statement.executeUpdate("insert into VEHICLES(VIN, VTYPEID, ENGINE, TRANSMISSION, VCOLOR, VYEAR) values ('$VIN', $VTypeID, '$Engine', '$Transmission', '$VColor', $VYear)")
+            val result = statement.executeQuery("select VEHICLEID from VEHICLES where VIN = '$VIN' and VTYPEID = '$VTypeID' and ENGINE = '$Engine' and TRANSMISSION = '$Transmission' and VCOLOR = '$VColor' and VYEAR = '$VYear'")
+            result.next()
+            type.id = result["VehicleID"]!!.toInt()
+            return type
+        }
+    }
+
+    fun updateDatabase()
+    {
+        val statement = connection.createStatement()
+        statement.executeUpdate("update VEHICLES set VIN = '$VIN', VTYPEID = $VTypeID, ENGINE = '$Engine', TRANSMISSION = '$Transmission', VCOLOR = '$VColor', VYEAR = $VYear where VEHICLEID = $id")
+    }
+}
+class Dealer private constructor(var Name: String)
+{
+    var id: Int = 0
+        private set
+
+    companion object: DBCompanion<Dealer>()
+    {
+        override fun get(result: ResultSet): Dealer
+        {
+            val type = Dealer(result["Name"]!!)
+            type.id = result["DealerID"]!!.toInt()
+            return type
+        }
+    }
+}
+class Factory private constructor(var Name: String, var PartID: Short)
+{
+    var id: Int = 0
+        private set
+
+    companion object: DBCompanion<Factory>()
+    {
+        override fun get(result: ResultSet): Factory
+        {
+            val type = Factory(result["Name"]!!, result["PartID"]!!.toShort())
+            type.id = result["FactoryID"]!!.toInt()
+            return type
+        }
+    }
+}
+class Part private constructor(var Name: String, var VTypeID: Short)
+{
+    var id: Int = 0
+        private set
+
+    companion object: DBCompanion<Part>()
+    {
+        override fun get(result: ResultSet): Part
+        {
+            val type = Part(result["Name"]!!, result["VTypeID"]!!.toShort())
+            type.id = result["PartID"]!!.toInt()
+            return type
+        }
     }
 }
