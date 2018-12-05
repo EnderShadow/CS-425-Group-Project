@@ -29,7 +29,7 @@ class Customer private constructor(var name: String, var email: String, var addr
     {
         override fun get(result: ResultSet): Customer
         {
-            val customer = Customer(result["Name"]!!, result["Email"]!!, result["Address1"]!!, result["Address2"] ?: "", result["City"]!!, result["State"]!!,
+            val customer = Customer(result["cName"]!!, result["Email"]!!, result["Address1"]!!, result["Address2"] ?: "", result["City"]!!, result["State"]!!,
                     result["ZipCode"]!!.toInt(), result["Phone"]!!, result["Gender"]!!, result["Income"]!!.toInt())
             customer.id = result["CustomerID"]!!.toLong()
             return customer
@@ -39,7 +39,7 @@ class Customer private constructor(var name: String, var email: String, var addr
         {
             val customer = Customer(name, email, address1, address2, city, state, zipCode, phone, gender, income)
             val statement = connection.createStatement()
-            statement.executeUpdate("insert into CUSTOMERS(NAME, EMAIL, ADDRESS1, ADDRESS2, CITY, STATE, ZIPCODE, PHONE, GENDER, INCOME) values ('$name', '$email', '$address1', '$address2', '$city', '$state', $zipCode, '$phone', '$gender', $income)")
+            statement.executeUpdate("insert into CUSTOMERS(CNAME, EMAIL, ADDRESS1, ADDRESS2, CITY, STATE, ZIPCODE, PHONE, GENDER, INCOME) values ('$name', '$email', '$address1', '$address2', '$city', '$state', $zipCode, '$phone', '$gender', $income)")
             val result = statement.executeQuery("select CUSTOMERID from CUSTOMERS where EMAIL = '$email'")
             result.next()
             customer.id = result["CustomerId"]!!.toLong()
@@ -50,7 +50,7 @@ class Customer private constructor(var name: String, var email: String, var addr
     fun updateDatabase()
     {
         val statement = connection.createStatement()
-        statement.executeUpdate("update CUSTOMERS set NAME = '$name', EMAIL = '$email', ADDRESS1 = '$address1', ADDRESS2 = '$address2', CITY = '$city', STATE = '$state', ZIPCODE = '$zipCode', PHONE = '$phone', GENDER = '$gender', INCOME = '$income' where CUSTOMERID = $id")
+        statement.executeUpdate("update CUSTOMERS set CNAME = '$name', EMAIL = '$email', ADDRESS1 = '$address1', ADDRESS2 = '$address2', CITY = '$city', STATE = '$state', ZIPCODE = '$zipCode', PHONE = '$phone', GENDER = '$gender', INCOME = '$income' where CUSTOMERID = $id")
     }
 }
 
@@ -176,7 +176,7 @@ class Dealer private constructor(val name: String)
     {
         override fun get(result: ResultSet): Dealer
         {
-            val type = Dealer(result["Name"]!!)
+            val type = Dealer(result["dName"]!!)
             type.id = result["DealerID"]!!.toInt()
             return type
         }
@@ -191,7 +191,7 @@ class Factory private constructor(val name: String, val partID: Short)
     {
         override fun get(result: ResultSet): Factory
         {
-            val type = Factory(result["Name"]!!, result["PartID"]!!.toShort())
+            val type = Factory(result["fName"]!!, result["PartID"]!!.toShort())
             type.id = result["FactoryID"]!!.toInt()
             return type
         }
@@ -206,7 +206,7 @@ class Part private constructor(val name: String, val vTypeID: Short)
     {
         override fun get(result: ResultSet): Part
         {
-            val type = Part(result["Name"]!!, result["VTypeID"]!!.toShort())
+            val type = Part(result["pName"]!!, result["VTypeID"]!!.toShort())
             type.id = result["PartID"]!!.toInt()
             return type
         }
@@ -220,7 +220,7 @@ class Suppliers private constructor(val name: String, val partID: Long)
     companion object: DBCompanion<Suppliers>(){
         override fun get(result: ResultSet): Suppliers
         {
-            val type = Suppliers(result["Name"]!!, result["PartID"]!!.toLong())
+            val type = Suppliers(result["sName"]!!, result["PartID"]!!.toLong())
             type.id = result["SupplierID"]!!.toInt()
             return type
         }

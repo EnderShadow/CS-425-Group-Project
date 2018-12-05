@@ -1,18 +1,23 @@
 package cs425.group.project
 
 import cs425.group.project.db.Customer
+import cs425.group.project.db.Dealer
+import cs425.group.project.db.get
 import javafx.beans.InvalidationListener
 import javafx.beans.binding.Bindings
+import javafx.beans.property.SimpleObjectProperty
+import javafx.beans.value.ObservableObjectValue
 import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
-import javafx.scene.control.Button
-import javafx.scene.control.RadioButton
-import javafx.scene.control.TextField
+import javafx.scene.control.*
 import javafx.scene.layout.StackPane
 import javafx.stage.Window
+import javafx.util.Callback
+import java.lang.Exception
 import java.sql.Connection
 import java.sql.DriverManager
 import java.util.concurrent.Callable
+import kotlin.reflect.full.memberProperties
 
 private const val DB_URL = "jdbc:oracle:thin:@smb.lobstergaming.com:1521:orclcdb"
 private const val USER = "system"
@@ -26,7 +31,7 @@ class Controller
 {
     lateinit var window: Window
     
-    @FXML private lateinit var stackPane: StackPane
+    @FXML lateinit var stackPane: StackPane
     
     fun initialize()
     {
@@ -112,15 +117,28 @@ class CustomerLoginController
     
             if(customers.size == 1)
             {
-                val customer = customers[0]
-                // TODO do something with this customer since they exist
-                println("Found customer: $customer")
+                val loader = FXMLLoader(javaClass.getResource("CustData.fxml"))
+                rootController.stackPane.children.add(loader.load())
+                loader.getController<CustomerDataController>().let {
+                    it.rootController = rootController
+                    it.customer = customers[0]
+                    it.reset()
+                }
+                
+                emailTextField.text = ""
+                nameTextField.text = ""
+                address1TextField.text = ""
+                address2TextField.text = ""
+                cityTextField.text = ""
+                stateTextField.text = ""
+                zipcodeTextField.text = ""
+                genderTextField.text = ""
+                phoneTextField.text = ""
+                incomeTextField.text = ""
             }
             else if(customers.isEmpty())
             {
-                // No one has this email
-                // TODO do something
-                println("There is no customer for email: ${emailTextField.text}")
+                AlertBox("Error", "There is no customer with that email address").showAndWait()
             }
         }
         else
@@ -131,17 +149,40 @@ class CustomerLoginController
     
             if(customers.isEmpty())
             {
-                // TODO create Customer object, fill in data, and then call updateDatabase
-                //creating customer with data from text fields
                 val customer = Customer.create(nameTextField.text, emailTextField.text, address1TextField.text, address2TextField.text, cityTextField.text, stateTextField.text, zipcodeTextField.text.toInt(), phoneTextField.text, genderTextField.text, incomeTextField.text.toInt())
-                customer.updateDatabase()
+                
+                val loader = FXMLLoader(javaClass.getResource("CustData.fxml"))
+                rootController.stackPane.children.add(loader.load())
+                loader.getController<CustomerDataController>().let {
+                    it.rootController = rootController
+                    it.customer = customer
+                    it.reset()
+                }
+                
+                emailTextField.text = ""
+                nameTextField.text = ""
+                address1TextField.text = ""
+                address2TextField.text = ""
+                cityTextField.text = ""
+                stateTextField.text = ""
+                zipcodeTextField.text = ""
+                genderTextField.text = ""
+                phoneTextField.text = ""
+                incomeTextField.text = ""
+                
+                loginToggle.isSelected = true
+                
             }
             else
             {
-                // TODO customer already exists so can't make a new one
-                println("Customer already exists with email: ${emailTextField.text}")
+                AlertBox("Error", "A customer already exists with that email address").showAndWait()
             }
         }
+    }
+    
+    fun back()
+    {
+        rootController.stackPane.children.run {removeAt(lastIndex)}
     }
 }
 
@@ -151,7 +192,6 @@ class DealerLoginController
     
     @FXML private lateinit var dealerIDTextField: TextField
     @FXML private lateinit var submitButton: Button
-    @FXML private lateinit var dealerNameTextField: TextField
 
 
     fun initialize()
@@ -161,9 +201,144 @@ class DealerLoginController
     
     fun submit()
     {
-        if (submitButton.isPressed){
-
+        if(submitButton.isPressed)
+        {
+            val dealerId = dealerIDTextField.text.toIntOrNull() ?: 0
+            val statement = connection.createStatement()
+            val result = statement.executeQuery("select * from DEALERS where DEALERID = '$dealerId'")
+            val dealers = Dealer.getAll(result)
+            if(dealers.isEmpty())
+            {
+                AlertBox("Error", "There is no dealer with that id").showAndWait()
+            }
+            else
+            {
+                val dealer = dealers[0]
+                // TODO
+            }
         }
+    }
     
+    fun back()
+    {
+        rootController.stackPane.children.run {removeAt(lastIndex)}
+    }
+}
+
+class CustomerDataController
+{
+    lateinit var rootController: Controller
+    lateinit var customer: Customer
+    
+    @FXML private lateinit var emailTextField: TextField
+    @FXML private lateinit var nameTextField: TextField
+    @FXML private lateinit var address1TextField: TextField
+    @FXML private lateinit var address2TextField: TextField
+    @FXML private lateinit var cityTextField: TextField
+    @FXML private lateinit var stateTextField: TextField
+    @FXML private lateinit var zipcodeTextField: TextField
+    @FXML private lateinit var genderTextField: TextField
+    @FXML private lateinit var phoneTextField: TextField
+    @FXML private lateinit var incomeTextField: TextField
+    
+    @FXML private lateinit var saveButton: Button
+    
+    fun initialize()
+    {
+        saveButton.disableProperty().bind(Bindings.createBooleanBinding(Callable {!emailTextField.text.matches(emailRegex)}, emailTextField.textProperty()))
+    }
+    
+    fun reset()
+    {
+        emailTextField.text = customer.email
+        nameTextField.text = customer.name
+        address1TextField.text = customer.address1
+        address2TextField.text = customer.address2
+        cityTextField.text = customer.city
+        stateTextField.text = customer.state
+        zipcodeTextField.text = customer.zipCode.toString()
+        genderTextField.text = customer.gender
+        phoneTextField.text = customer.phone
+        incomeTextField.text = customer.income.toString()
+    }
+    
+    fun save()
+    {
+        customer.email = emailTextField.text
+        customer.name = nameTextField.text ?: ""
+        customer.address1 = address1TextField.text ?: ""
+        customer.address2 = address2TextField.text ?: ""
+        customer.city = cityTextField.text ?: ""
+        customer.state = stateTextField.text ?: ""
+        customer.zipCode = zipcodeTextField.text.toIntOrNull() ?: 0
+        customer.gender = genderTextField.text ?: ""
+        customer.phone = phoneTextField.text ?: ""
+        customer.income = incomeTextField.text.toIntOrNull() ?: 0
+        
+        customer.updateDatabase()
+    }
+    
+    fun viewPurchaseHistory()
+    {
+        val loader = FXMLLoader(javaClass.getResource("CustPurchase.fxml"))
+        rootController.stackPane.children.add(loader.load())
+        loader.getController<CustomerPurchaseController>().let {
+            it.rootController = rootController
+            it.customer = customer
+            it.fill()
+        }
+    }
+    
+    fun logout()
+    {
+        rootController.stackPane.children.run {removeAt(lastIndex)}
+    }
+}
+
+class CustomerPurchaseController
+{
+    lateinit var rootController: Controller
+    lateinit var customer: Customer
+    
+    @FXML private lateinit var purchaseTableView: TableView<Purchase>
+    
+    fun initialize()
+    {
+        purchaseTableView.columns.forEach {col ->
+            col.cellValueFactory = Callback {param: TableColumn.CellDataFeatures<Purchase, out Any> ->
+                SimpleObjectProperty(param.value::class.java.methods.first {it.name.endsWith(param.tableColumn.text.replace(" ", ""), true)}.invoke(param.value))
+            }
+        }
+    }
+    
+    fun fill()
+    {
+        purchaseTableView.items.addAll(Purchase.getPurchases(customer))
+    }
+    
+    fun back()
+    {
+        rootController.stackPane.children.run {removeAt(lastIndex)}
+    }
+    
+    private class Purchase private constructor(val dealer: String, val saleDate: String, val vin: String, val trim: String, val model: String, val brand: String, val company: String, val transmission: String, val color: String, val year: Short)
+    {
+        companion object
+        {
+            fun getPurchases(customer: Customer): List<Purchase>
+            {
+                val purchases = mutableListOf<Purchase>()
+                
+                val statement = connection.createStatement()
+                val result = statement.executeQuery("select * from (VEHICLESALES natural join CUSTOMERS natural join DEALERS natural join VEHICLES natural join VEHICLETYPES natural join BRANDS) where CUSTOMERID = '${customer.id}'")
+                
+                while(result.next())
+                {
+                    purchases.add(Purchase(result["dName"]!!, result["SaleDate"]!!, result["VIN"]!!, result["Trim"]!!, result["VModel"]!!, result["BrandName"]!!, result["Company"]!!, result["Transmission"]!!, result["VColor"]!!, result["VYear"]!!.toShort()))
+                }
+                
+                return purchases
+            }
+        }
     }
 }

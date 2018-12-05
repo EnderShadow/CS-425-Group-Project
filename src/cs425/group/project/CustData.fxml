@@ -3,18 +3,17 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cs425.group.project.CustomerLoginController">
+<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cs425.group.project.CustomerDataController">
    <children>
       <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Label prefWidth="206.0" text="Customer Login">
+            <Label alignment="CENTER" prefHeight="31.0" prefWidth="217.0" text="Customer Data">
                <font>
                   <Font size="26.0" />
                </font>
@@ -26,15 +25,6 @@
                <children>
                   <Label text="Email " />
                   <TextField fx:id="emailTextField" prefHeight="26.0" prefWidth="319.0" />
-               </children>
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-            </HBox>
-            <HBox alignment="CENTER" prefHeight="14.0" prefWidth="800.0">
-               <children>
-                  <RadioButton fx:id="loginToggle" mnemonicParsing="false" selected="true" text="Login" />
-                  <RadioButton fx:id="createAccountToggle" mnemonicParsing="false" text="Create Account" />
                </children>
                <VBox.margin>
                   <Insets />
@@ -102,8 +92,10 @@
             </HBox>
             <HBox alignment="CENTER" prefHeight="22.0" prefWidth="800.0" spacing="10.0">
                <children>
-                  <Button fx:id="submitButton" mnemonicParsing="false" onAction="#submit" text="Login" />
-                  <Button mnemonicParsing="false" onAction="#back" text="Back" />
+                  <Button fx:id="saveButton" mnemonicParsing="false" onAction="#save" text="Save Changes" />
+                  <Button mnemonicParsing="false" onAction="#reset" text="Reset Fields" />
+                  <Button mnemonicParsing="false" onAction="#viewPurchaseHistory" text="View Purchase History" />
+                  <Button mnemonicParsing="false" onAction="#logout" text="Logout" />
                </children>
                <VBox.margin>
                   <Insets />

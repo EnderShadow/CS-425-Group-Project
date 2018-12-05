@@ -30,9 +30,10 @@
                   <Insets />
                </VBox.margin>
             </HBox>
-            <HBox alignment="CENTER" prefHeight="22.0" prefWidth="800.0">
+            <HBox alignment="CENTER" prefHeight="22.0" prefWidth="800.0" spacing="10.0">
                <children>
                   <Button fx:id="submitButton" mnemonicParsing="false" onAction="#submit" text="Login" />
+                  <Button mnemonicParsing="false" onAction="#back" text="Back" />
                </children>
                <VBox.margin>
                   <Insets />
