@@ -6,18 +6,16 @@ import cs425.group.project.db.get
 import javafx.beans.InvalidationListener
 import javafx.beans.binding.Bindings
 import javafx.beans.property.SimpleObjectProperty
-import javafx.beans.value.ObservableObjectValue
 import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
 import javafx.scene.control.*
 import javafx.scene.layout.StackPane
 import javafx.stage.Window
 import javafx.util.Callback
-import java.lang.Exception
+import java.lang.reflect.InvocationTargetException
 import java.sql.Connection
 import java.sql.DriverManager
 import java.util.concurrent.Callable
-import kotlin.reflect.full.memberProperties
 
 private const val DB_URL = "jdbc:oracle:thin:@smb.lobstergaming.com:1521:orclcdb"
 private const val USER = "system"
@@ -201,20 +199,21 @@ class DealerLoginController
     
     fun submit()
     {
-        if(submitButton.isPressed)
+        val dealerId = dealerIDTextField.text.toIntOrNull() ?: 0
+        val statement = connection.createStatement()
+        val result = statement.executeQuery("select * from DEALERS where DEALERID = '$dealerId'")
+        val dealers = Dealer.getAll(result)
+        if(dealers.isEmpty())
         {
-            val dealerId = dealerIDTextField.text.toIntOrNull() ?: 0
-            val statement = connection.createStatement()
-            val result = statement.executeQuery("select * from DEALERS where DEALERID = '$dealerId'")
-            val dealers = Dealer.getAll(result)
-            if(dealers.isEmpty())
-            {
-                AlertBox("Error", "There is no dealer with that id").showAndWait()
-            }
-            else
-            {
-                val dealer = dealers[0]
-                // TODO
+            AlertBox("Error", "There is no dealer with that id").showAndWait()
+        }
+        else
+        {
+            val loader = FXMLLoader(javaClass.getResource("DealerPage.fxml"))
+            rootController.stackPane.children.add(loader.load())
+            loader.getController<DealerPageController>().let {
+                it.rootController = rootController
+                it.dealer = dealers[0]
             }
         }
     }
@@ -321,6 +320,7 @@ class CustomerPurchaseController
         rootController.stackPane.children.run {removeAt(lastIndex)}
     }
     
+    // Even though IntelliJ is complaining about these not being accessed, they are. They're just being accessed with reflection because it was easier to write the code that way.
     private class Purchase private constructor(val dealer: String, val saleDate: String, val vin: String, val trim: String, val model: String, val brand: String, val company: String, val transmission: String, val color: String, val year: Short)
     {
         companion object
@@ -340,5 +340,42 @@ class CustomerPurchaseController
                 return purchases
             }
         }
+    }
+}
+
+class DealerPageController
+{
+    lateinit var rootController: Controller
+    lateinit var dealer: Dealer
+    
+    @FXML private lateinit var queryTextField: TextField
+    @FXML private lateinit var outputTextArea: TextArea
+    
+    fun executeQuery()
+    {
+        val statement = connection.createStatement()
+        if(queryTextField.text.isNotEmpty())
+        {
+            val result = statement.executeQuery(queryTextField.text)
+            val metadata = result.metaData
+            outputTextArea.text += "Executing Query: ${queryTextField.text}\n"
+            try
+            {
+                while(result.next())
+                {
+                    outputTextArea.text += ((1..metadata.columnCount).joinToString(", ", postfix = "\n") {"${metadata.getColumnName(it)}: ${result.getString(it)}"})
+                }
+            }
+            catch(ie: InvocationTargetException)
+            {
+                // The only exceptions will be from malformed sql or trying to read the result from an update
+            }
+            outputTextArea.text += "\n"
+        }
+    }
+    
+    fun back()
+    {
+        rootController.stackPane.children.run {removeAt(lastIndex)}
     }
 }
